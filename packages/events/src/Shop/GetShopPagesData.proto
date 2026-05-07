@@ -2,4 +2,5 @@ syntax = "proto3";
 
 message GetShopPagesData {
     string category = 1;
+    optional string search = 2;
 }

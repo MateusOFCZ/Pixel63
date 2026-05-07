@@ -4,31 +4,63 @@ import { ShopPageFurnitureModel } from "../../../Database/Models/Shop/ShopPageFu
 import { FurnitureModel } from "../../../Database/Models/Furniture/FurnitureModel.js";
 import { GetShopPageFurnitureData, ShopPageFurnitureData } from "@pixel63/events";
 import ProtobuffListener from "../../Interfaces/ProtobuffListener.js";
+import { Op } from "sequelize";
 
 export default class GetShopPageFurnitureEvent implements ProtobuffListener<GetShopPageFurnitureData> {
     minimumDurationBetweenEvents?: number = 20;
 
     async handle(user: User, payload: GetShopPageFurnitureData) {
-        const shopPage = await ShopPageModel.findByPk(payload.pageId, {
-            include: {
-                model: ShopPageFurnitureModel,
-                as: "furniture",
+        let furniture: ShopPageFurnitureModel[] = [];
+
+        if(payload.search?.length) {
+            furniture = await ShopPageFurnitureModel.findAll({
+                where: {
+                    [Op.or]: [
+                        {
+                            '$furniture.name$': {
+                                [Op.like]: `%${payload.search}%`
+                            }
+                        },
+                        {
+                            '$furniture.description$': {
+                                [Op.like]: `%${payload.search}%`
+                            }
+                        }
+                    ]
+                },
                 include: [
                     {
                         model: FurnitureModel,
-                        as: "furniture"
+                        as: 'furniture'
                     }
-                ]
-            }
-        });
+                ],
+                limit: 30
+            });
+        }
+        else {
+            const shopPage = await ShopPageModel.findByPk(payload.pageId, {
+                include: {
+                    model: ShopPageFurnitureModel,
+                    as: "furniture",
+                    include: [
+                        {
+                            model: FurnitureModel,
+                            as: "furniture"
+                        }
+                    ]
+                }
+            });
 
-        if(!shopPage) {
-            throw new Error("Shop page does not exist.");
+            if(!shopPage) {
+                throw new Error("Shop page does not exist.");
+            }
+
+            furniture = shopPage.furniture;
         }
 
         user.sendProtobuff(ShopPageFurnitureData, ShopPageFurnitureData.fromJSON({
-            pageId: shopPage.id,
-            furniture: shopPage.furniture.sort((a, b) => a.furniture.type.localeCompare(b.furniture.type)).map((furniture) => {
+            pageId: payload.pageId,
+            furniture: furniture.sort((a, b) => a.furniture.type.localeCompare(b.furniture.type)).map((furniture) => {
                 return {
                     id: furniture.id,
                     furniture: furniture.furniture,

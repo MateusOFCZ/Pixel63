@@ -26,6 +26,7 @@ const categories = ["frontpage", "furniture", "clothing", "pets"];
 export default function ShopDialog({ hidden, data, onClose }: ShopDialogProps) {
     const hasEditShopPermission = usePermissionAction("shop:edit");
 
+    const [search, setSearch] = useState("");
     const [header, setHeader] = useState<DialogTabHeaderProps>();
     const [editMode, setEditMode] = useState(false);
     const [activeIndex, setActiveIndex] = useState(categories.indexOf(data?.requestedPage?.category ?? data?.requestedCategory ?? "frontpage"));
@@ -62,11 +63,23 @@ export default function ShopDialog({ hidden, data, onClose }: ShopDialogProps) {
                         return a.title.localeCompare(b.title);
                     }));
 
-                    if(requestedShopPage?.category === category) {
-                        setActiveShopPage(payload.pages.find((shopPage) => shopPage.id === requestedShopPage.id));
+                    if(!payload.search) {
+                        if(requestedShopPage?.category === category) {
+                            setActiveShopPage(payload.pages.find((shopPage) => shopPage.id === requestedShopPage.id));
+                        }
+                        else {
+                            setActiveShopPage(payload.pages[0]);
+                        }
                     }
                     else {
-                        setActiveShopPage(payload.pages[0]);
+                        setActiveShopPage(ShopPageData.create({
+                            id: "search",
+                            category,
+
+                            title: `Search for '${payload.search}'`,
+
+                            type: "default"
+                        }));
                     }
                 }
             },
@@ -87,6 +100,22 @@ export default function ShopDialog({ hidden, data, onClose }: ShopDialogProps) {
         }
     }, [data?.requestedCategory])
 
+    useEffect(() => {
+        const category = categories.at(activeIndex);
+
+        if(!category) {
+            return;
+        }
+
+        if(search) {
+        }
+
+        webSocketClient.sendProtobuff(GetShopPagesData, GetShopPagesData.create({
+            category,
+            search
+        }));
+    }, [activeIndex, search]);
+
     // TODO: handle category and shop pages here
     const handleActiveShopPage = useCallback((shopPage: { id: string; category: string }) => {
         const category = categories.at(activeIndex);
@@ -106,25 +135,65 @@ export default function ShopDialog({ hidden, data, onClose }: ShopDialogProps) {
                 {
                     icon: "Frontpage",
                     element: (
-                        <ShopDialogCategory category={categories[activeIndex]} activeShopPage={activeShopPage} setActiveShopPage={handleActiveShopPage} shopPages={shopPages} onHeaderChange={setHeader} editMode={editMode} requestedFurnitureId={data?.requestedFurnitureId}/>
+                        <ShopDialogCategory
+                            category={categories[activeIndex]}
+                            activeShopPage={activeShopPage}
+                            setActiveShopPage={handleActiveShopPage}
+                            search={search}
+                            onSearchChange={setSearch}
+                            shopPages={shopPages}
+                            onHeaderChange={setHeader}
+                            editMode={editMode}
+                            requestedFurnitureId={data?.requestedFurnitureId}
+                            />
                     ),
                 },
                 {
                     icon: "Furniture",
                     element: (
-                        <ShopDialogCategory category={categories[activeIndex]} activeShopPage={activeShopPage} setActiveShopPage={handleActiveShopPage} shopPages={shopPages} onHeaderChange={setHeader} editMode={editMode} requestedFurnitureId={data?.requestedFurnitureId}/>
+                        <ShopDialogCategory
+                            category={categories[activeIndex]}
+                            activeShopPage={activeShopPage}
+                            setActiveShopPage={handleActiveShopPage}
+                            search={search}
+                            onSearchChange={setSearch}
+                            shopPages={shopPages}
+                            onHeaderChange={setHeader}
+                            editMode={editMode}
+                            requestedFurnitureId={data?.requestedFurnitureId}
+                            />
                     ),
                 },
                 {
                     icon: "Clothing",
                     element: (
-                        <ShopDialogCategory category={categories[activeIndex]} activeShopPage={activeShopPage} setActiveShopPage={handleActiveShopPage} shopPages={shopPages} onHeaderChange={setHeader} editMode={editMode} requestedFurnitureId={data?.requestedFurnitureId}/>
+                        <ShopDialogCategory
+                            category={categories[activeIndex]}
+                            activeShopPage={activeShopPage}
+                            setActiveShopPage={handleActiveShopPage}
+                            search={search}
+                            onSearchChange={setSearch}
+                            shopPages={shopPages}
+                            onHeaderChange={setHeader}
+                            editMode={editMode}
+                            requestedFurnitureId={data?.requestedFurnitureId}
+                            />
                     ),
                 },
                 {
                     icon: "Pets",
                     element: (
-                        <ShopDialogCategory category={categories[activeIndex]} activeShopPage={activeShopPage} setActiveShopPage={handleActiveShopPage} shopPages={shopPages} onHeaderChange={setHeader} editMode={editMode} requestedFurnitureId={data?.requestedFurnitureId}/>
+                        <ShopDialogCategory
+                            category={categories[activeIndex]}
+                            activeShopPage={activeShopPage}
+                            setActiveShopPage={handleActiveShopPage}
+                            search={search}
+                            onSearchChange={setSearch}
+                            shopPages={shopPages}
+                            onHeaderChange={setHeader}
+                            editMode={editMode}
+                            requestedFurnitureId={data?.requestedFurnitureId}
+                            />
                     ),
                 }
             ]}>

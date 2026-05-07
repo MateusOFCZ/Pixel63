@@ -2,4 +2,5 @@ syntax = "proto3";
 
 message GetShopPageFurnitureData {
     string page_id = 1;
+    optional string search = 2;
 }

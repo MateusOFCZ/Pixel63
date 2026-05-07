@@ -9,34 +9,35 @@ import ShopHabboClubPage from "@UserInterface/Components/Shop/Pages/ShopHabboClu
 
 export type ShopPageProps = {
     editMode?: boolean;
+    search: string;
     page: ShopPageData;
     setActiveShopPage?: (page: { id: string; category: string; }) => void;
     
     requestedFurnitureId?: string;
 }
 
-export default function ShopPage({ editMode, page, setActiveShopPage, requestedFurnitureId }: ShopPageProps) {
+export default function ShopPage({ search, editMode, page, setActiveShopPage, requestedFurnitureId }: ShopPageProps) {
     switch(page.type) {
         case "default":
-            return (<ShopDefaultPage key={page.id} editMode={editMode} page={page} requestedFurnitureId={requestedFurnitureId}/>);
+            return (<ShopDefaultPage key={page.id} search={search} editMode={editMode} page={page} requestedFurnitureId={requestedFurnitureId}/>);
 
         case "bundle":
-            return (<ShopBundlePage key={page.id} editMode={editMode} page={page} requestedFurnitureId={requestedFurnitureId}/>);
+            return (<ShopBundlePage key={page.id} search={search} editMode={editMode} page={page} requestedFurnitureId={requestedFurnitureId}/>);
             
         case "trophies":
-            return (<ShopTrophiesPage key={page.id} editMode={editMode} page={page} requestedFurnitureId={requestedFurnitureId}/>);
+            return (<ShopTrophiesPage key={page.id} search={search} editMode={editMode} page={page} requestedFurnitureId={requestedFurnitureId}/>);
             
         case "bots":
-            return (<ShopBotsPage key={page.id} editMode={editMode} page={page} requestedFurnitureId={requestedFurnitureId}/>);
+            return (<ShopBotsPage key={page.id} search={search} editMode={editMode} page={page} requestedFurnitureId={requestedFurnitureId}/>);
             
         case "pets":
-            return (<ShopPetsPage key={page.id} editMode={editMode} page={page} requestedFurnitureId={requestedFurnitureId}/>);
+            return (<ShopPetsPage key={page.id} search={search} editMode={editMode} page={page} requestedFurnitureId={requestedFurnitureId}/>);
 
         case "features":
-            return (<ShopFeaturesPage key={page.id} editMode={editMode} page={page} requestedFurnitureId={requestedFurnitureId} setActiveShopPage={setActiveShopPage}/>);
+            return (<ShopFeaturesPage key={page.id} search={search} editMode={editMode} page={page} requestedFurnitureId={requestedFurnitureId} setActiveShopPage={setActiveShopPage}/>);
             
         case "habboclub":
-            return (<ShopHabboClubPage key={page.id} editMode={editMode} page={page} requestedFurnitureId={requestedFurnitureId}/>);
+            return (<ShopHabboClubPage key={page.id} search={search} editMode={editMode} page={page} requestedFurnitureId={requestedFurnitureId}/>);
         
         default:
             return <div/>;

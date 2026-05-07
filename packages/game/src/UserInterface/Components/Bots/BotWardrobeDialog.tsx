@@ -2,7 +2,7 @@ import FigureWardrobeDialog from "../Wardrobe/FigureWardrobeDialog";
 import { useCallback, useEffect, useState } from "react";
 import { webSocketClient } from "../../..";
 import { useDialogs } from "../../Hooks/useDialogs";
-import { RoomBotsData, UpdateRoomBotData, UserBotData } from "@pixel63/events";
+import { FigureConfigurationData, RoomBotsData, UpdateRoomBotData, UserBotData } from "@pixel63/events";
 import WardrobeAvatar from "@UserInterface/Components/Wardrobe/WardrobeAvatar";
 import DialogButton from "@UserInterface/Common/Dialog/Components/Button/DialogButton";
 
@@ -15,7 +15,7 @@ export type BotWardrobeDialogProps = {
 export default function BotWardrobeDialog(props: BotWardrobeDialogProps) {
     const dialogs = useDialogs();
 
-    const [figureConfiguration, setFigureConfiguration] = useState(props.data.figureConfiguration);
+    const [figureConfiguration, setFigureConfiguration] = useState(FigureConfigurationData.create(props.data.figureConfiguration));
 
     useEffect(() => {
         const listener = webSocketClient.addProtobuffListener(RoomBotsData, {
@@ -30,6 +30,11 @@ export default function BotWardrobeDialog(props: BotWardrobeDialogProps) {
             webSocketClient.removeProtobuffListener(RoomBotsData, listener);
         };
     }, [props.data.id, dialogs]);
+
+
+    useEffect(() => {
+        setFigureConfiguration(FigureConfigurationData.create(props.data.figureConfiguration));
+    }, [props.data.figureConfiguration]);
 
     const handleApply = useCallback(() => {
         webSocketClient.sendProtobuff(UpdateRoomBotData, UpdateRoomBotData.create({

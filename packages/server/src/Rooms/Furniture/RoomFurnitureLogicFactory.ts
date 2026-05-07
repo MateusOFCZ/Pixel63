@@ -92,6 +92,7 @@ import WiredActionBotChangeClothesLogic from "./Logic/Wired/Action/WiredActionBo
 import WiredConditionMatchToPositionStateLogic from "./Logic/Wired/Conditions/WiredConditionMatchToPositionStateLogic";
 import WiredConditionUserOnFurnitureLogic from "./Logic/Wired/Conditions/WiredConditionUserOnFurnitureLogic";
 import WiredConditionFurniHasUserLogic from "./Logic/Wired/Conditions/WiredConditionFurniHasUserLogic";
+import RoomFurnitureWaterLogic from "./Logic/RoomFurnitureWaterLogic";
 
 export default class RoomFurnitureLogicFactory {
     public static getLogic(roomFurniture: RoomFurniture): RoomFurnitureLogic | null {
@@ -142,6 +143,9 @@ export default class RoomFurnitureLogicFactory {
             case "trax":
             case "jukebox":
                 return new RoomFurnitureTraxLogic(roomFurniture);
+
+            case "water":
+                return new RoomFurnitureWaterLogic(roomFurniture);
 
             // Skateboarding
             case "skate_rail":

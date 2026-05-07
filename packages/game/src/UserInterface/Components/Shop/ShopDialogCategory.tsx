@@ -1,11 +1,13 @@
 import DialogPanel from "../../Common/Dialog/Components/Panels/DialogPanel";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ShopPage from "./Pages/ShopPage";
 import { DialogTabHeaderProps } from "../../Common/Dialog/Components/Tabs/DialogTabs";
 import { useDialogs } from "../../Hooks/useDialogs";
 import ShopPagesList from "./ShopPagesList";
 import { ShopPageData } from "@pixel63/events";
 import DialogScrollArea from "../../Common/Dialog/Components/Scroll/DialogScrollArea";
+import Input from "@UserInterface/Common/Form/Components/Input";
+import ShopDefaultPage from "@UserInterface/Components/Shop/Pages/ShopDefaultPage";
 
 export type ShopDialogCategoryProps = {
     category: string;
@@ -15,13 +17,18 @@ export type ShopDialogCategoryProps = {
 
     shopPages: ShopPageData[];
     activeShopPage?: ShopPageData;
+    
+    search: string;
     setActiveShopPage: (page: { id: string; category: string; }) => void;
+
+    onSearchChange: (search: string) => void;
 
     requestedFurnitureId?: string;
 }
 
-export default function ShopDialogCategory({ category, editMode, onHeaderChange, shopPages, activeShopPage, setActiveShopPage, requestedFurnitureId }: ShopDialogCategoryProps) {
+export default function ShopDialogCategory({ category, editMode, onHeaderChange, shopPages, activeShopPage, setActiveShopPage, search, onSearchChange, requestedFurnitureId }: ShopDialogCategoryProps) {
     const dialogs = useDialogs();
+    const [searchText, setSearchText] = useState("");
 
     useEffect(() => {
         if(activeShopPage?.type === "none") {
@@ -72,8 +79,12 @@ export default function ShopDialogCategory({ category, editMode, onHeaderChange,
             overflow: "hidden"
         }}>
             {(activeShopPage?.type !== "features") && (
-                <div style={{ display: "flex", width: 190 }}>
-                    <DialogPanel style={{ flex: 1 }} contentStyle={{ display: "flex" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 5, width: 190 }}>
+                    <Input placeholder="Search here..." value={searchText} onChange={setSearchText} onSubmit={onSearchChange}>
+                        <div className="sprite_room_user_motto_pen"/>
+                    </Input>
+
+                    <DialogPanel style={{ flex: 1, overflow: "hidden" }} contentStyle={{ display: "flex" }}>
                         <DialogScrollArea style={{ gap: 1 }} hideInactive>
                             <ShopPagesList tabs={0} parentId={undefined} editMode={editMode} handleCreatePage={handleCreatePage} handleEditPage={handleEditPage} shopPages={shopPages} activeShopPage={activeShopPage} onPageChange={setActiveShopPage}/>
 
@@ -94,7 +105,7 @@ export default function ShopDialogCategory({ category, editMode, onHeaderChange,
                 </div>
             )}
 
-            {(activeShopPage) && (<ShopPage editMode={editMode} page={activeShopPage} setActiveShopPage={setActiveShopPage} requestedFurnitureId={requestedFurnitureId}/>)}
+            {(activeShopPage) && (<ShopPage search={search} editMode={editMode} page={activeShopPage} setActiveShopPage={setActiveShopPage} requestedFurnitureId={requestedFurnitureId}/>)}
         </div>
     );
 }

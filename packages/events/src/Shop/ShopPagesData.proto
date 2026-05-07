@@ -5,4 +5,5 @@ import "Shop/Pages/ShopPageData.proto";
 message ShopPagesData {
     string category = 1;
     repeated ShopPageData pages = 2;
+    optional string search = 3;
 }

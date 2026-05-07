@@ -65,19 +65,21 @@ export default function InventoryBadgesTab() {
 
     return (
         <div style={{
-            flex: "1 1 0",
+            flex: 1,
 
             display: "flex",
             flexDirection: "column"
         }}>
             <div style={{
-                flex: 1,
+                flex: "1 1 0",
 
                 display: "flex",
                 flexDirection: "row",
-                gap: 20
+                gap: 20,
+
+                overflow: "hidden"
             }}>
-                <DialogScrollArea style={{ gap: 1 }} hideInactive>
+                <DialogScrollArea hideInactive>
                     <div style={{
                         flex: 1,
 

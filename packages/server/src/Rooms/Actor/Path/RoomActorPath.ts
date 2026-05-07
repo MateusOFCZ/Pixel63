@@ -116,8 +116,6 @@ export default class RoomActorPath {
             const blockedByAnotherPet = (blockingActor instanceof RoomPet && (!(this.actor instanceof RoomPet) || blockingActor.model.id !== this.actor.model.id));
 
             if(blockedByAnotherBot || blockedByAnotherUser || blockedByAnotherPet) {
-                console.log("User path cancelled, user is obstructing");
-
                 return false;
             }
         }
@@ -126,8 +124,6 @@ export default class RoomActorPath {
 
         if(furniture) {
             if(!this.walkThroughFurniture && !furniture.isWalkable(path.length === 1)) {
-                console.log("User path cancelled");
-
                 return false;
             }
         }
@@ -277,8 +273,6 @@ export default class RoomActorPath {
         if(this.path === undefined) {
             return;
         }
-
-        console.log("path finished")
 
         const sitableFurniture = this.actor.room.getSitableFurnitureAtPosition(RoomPositionOffsetData.fromJSON(this.actor.position));
 

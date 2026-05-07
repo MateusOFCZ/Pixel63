@@ -8,6 +8,7 @@ import ProtobuffListener from "../../Interfaces/ProtobuffListener.js";
 import { ShopPageBundleModel } from "../../../Database/Models/Shop/ShopPageBundleModel.js";
 import { BadgeModel } from "../../../Database/Models/Badges/BadgeModel.js";
 import UserPermissions from "../../../Users/Permissions/UserPermissions.js";
+import { Op } from "sequelize";
 
 export default class GetShopPagesEvent implements ProtobuffListener<GetShopPagesData> {
     minimumDurationBetweenEvents?: number = 100;
@@ -21,6 +22,20 @@ export default class GetShopPagesEvent implements ProtobuffListener<GetShopPages
             where: {
                 ...((payload.category !== "all") && {
                     category: payload.category,
+                }),
+                ...((payload.search?.length) && {
+                    [Op.or]: [
+                        {
+                            title: {
+                                [Op.like]: `%${payload.search}%`
+                            }
+                        },
+                        {
+                            description: {
+                                [Op.like]: `%${payload.search}%`
+                            }
+                        }
+                    ]
                 })
             },
             include: [
@@ -62,11 +77,13 @@ export default class GetShopPagesEvent implements ProtobuffListener<GetShopPages
         const permissions = await user.getPermissions();
 
         user.sendProtobuff(ShopPagesData, ShopPagesData.create({
+            search: payload.search,
+
             category: payload.category,
             pages: shopPages.sort((a, b) => a.index - b.index).map((shopPage) => {
                 return {
                     id: shopPage.id,
-                    parentId: shopPage.parentId,
+                    parentId: (!payload.search)?(shopPage.parentId):(undefined),
                     category: shopPage.category,
 
                     title: shopPage.title,

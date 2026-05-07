@@ -18,12 +18,12 @@ import Input from "@UserInterface/Common/Form/Components/Input";
 import RoomRenderer from "@UserInterface/Common/Room/RoomRenderer";
 import MembershipSmallIcon from "@UserInterface/Common/Memberships/MembershipSmallIcon";
 
-export default function ShopDefaultPage({ editMode, page, requestedFurnitureId }: ShopPageProps) {
+export default function ShopDefaultPage({ search, editMode, page, requestedFurnitureId }: ShopPageProps) {
     const dialogs = useDialogs();
     const user = useUser();
     const room = useRoomInstance();
 
-    const shopFurniture = useShopPageFurniture(page.id);
+    const shopFurniture = useShopPageFurniture(page.id, undefined, search);
 
     const activeFurnitureRef = useRef<HTMLCanvasElement>(null);
 
