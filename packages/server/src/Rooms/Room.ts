@@ -50,12 +50,12 @@ export default class Room {
 
     public addUserClient(user: User, position?: RoomPositionData) {
         const roomUser = new RoomUser(this, user, position);
-        
+
         this.users.push(roomUser);
 
         return roomUser;
     }
-    
+
     public sendProtobuff<Message extends UnknownMessage = UnknownMessage>(message: MessageType, payload: Message) {
         const encoded = message.encode(payload).finish();
 
@@ -105,12 +105,12 @@ export default class Room {
         for (const user of this.users) {
             const rowDifference = user.position.row - position.row;
             const columnDifference = user.position.column - position.column;
-            
+
             const distanceSquared = rowDifference * rowDifference + columnDifference * columnDifference;
 
             if (distanceSquared < closestDistance) {
                 closestDistance = distanceSquared;
-            
+
                 closestUser = user;
             }
         }
@@ -235,7 +235,7 @@ export default class Room {
         }
     }
 
-    public unload() {
+    public async unload() {
         if(this.actionsInterval === undefined) {
             return;
         }
@@ -243,6 +243,13 @@ export default class Room {
         clearInterval(this.actionsInterval);
 
         delete this.actionsInterval;
+
+        for(const bot of this.bots) {
+            await bot.model.update({
+                position: bot.position,
+                direction: bot.direction
+            });
+        }
 
         for(const user of game.users.filter((user) => user.roomBellQueue?.model.id === this.model.id)) {
             user.sendProtobuff(UpdateRoomBellQueueData, UpdateRoomBellQueueData.create({
@@ -442,7 +449,7 @@ export default class Room {
             $type: "RoomInformationData",
 
             id: this.model.id,
-            
+
             type: this.model.type,
             lock: this.model.lock,
 
@@ -450,7 +457,7 @@ export default class Room {
             description: this.model.description,
             category: this.model.category.id,
             thumbnail: (this.model.thumbnail)?(Buffer.from(this.model.thumbnail).toString('utf8')):(undefined),
-            
+
             owner: {
                 $type: "RoomInformationOwnerData",
                 id: this.model.owner.id,
@@ -460,7 +467,7 @@ export default class Room {
             maxUsers: this.model.maxUsers
         };
     }
-    
+
     public getFurnitureWithCategory<T>(category: (new (...args: any[]) => T)) {
         return this.furnitures.filter((furniture) => furniture.logic instanceof category).map((furniture) => furniture.logic as T);
     }
@@ -558,7 +565,7 @@ export default class Room {
 
         for(const { furniture, animation } of bulkFurniture) {
             await furniture.model.update({ animation }, {
-                transaction 
+                transaction
             });
         }
 

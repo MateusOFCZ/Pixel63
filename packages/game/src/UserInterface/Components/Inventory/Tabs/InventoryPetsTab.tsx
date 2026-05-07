@@ -43,7 +43,7 @@ export default function InventoryPetsTab() {
                     let mutatedUserPets = [...userPets];
 
                     if(payload.updatedUserPets.length) {
-                        mutatedUserPets = 
+                        mutatedUserPets =
                             payload.updatedUserPets.concat(
                                 ...mutatedUserPets
                                     .filter((userFurniture) => !payload.updatedUserPets?.some((updatedUserPets) => updatedUserPets.id === userFurniture.id)));
@@ -81,7 +81,7 @@ export default function InventoryPetsTab() {
     useEffect(() => {
         if(!roomFurniturePlacer) {
             setDialogHidden("inventory", false);
-            
+
             return;
         }
 
@@ -100,7 +100,7 @@ export default function InventoryPetsTab() {
         roomFurniturePlacer.startPlacing((position, direction) => {
             webSocketClient.sendProtobuff(PlaceRoomPetData, PlaceRoomPetData.create({
                 id: activePet.id,
-                
+
                 position,
                 direction
             }));
@@ -126,6 +126,23 @@ export default function InventoryPetsTab() {
         setRoomFurniturePlacer(RoomFurniturePlacer.fromPetData(clientInstance.roomInstance.value, activePet.pet));
         roomFurniturePlacerId.current = activePet?.id;
     }, [roomFurniturePlacer, activePet]);
+
+		const handleMouseDown = useCallback((userPet: UserPetData) => {
+			if(!room) {
+				return;
+			}
+
+			if(!activePet?.pet) {
+				return;
+			}
+
+			if(!clientInstance.roomInstance.value?.roomRenderer) {
+				return;
+			}
+
+			setRoomFurniturePlacer(RoomFurniturePlacer.fromPetData(clientInstance.roomInstance.value, activePet.pet));
+			roomFurniturePlacerId.current = userPet?.id;
+		}, [room, activePet]);
 
     if(!userPets.length) {
         return (<InventoryEmptyTab/>);
@@ -157,6 +174,7 @@ export default function InventoryPetsTab() {
                             key={userPet.id}
                             active={activePet?.id === userPet.id}
                             onClick={() => setActivePet(userPet)}
+														onMouseDown={() => room && handleMouseDown(userPet)}
                             width={46}
                             style={{
                                 overflow: "hidden"

@@ -17,5 +17,7 @@ message UpdateRoomBotData {
     optional BotSpeechData speech = 6;
 
     optional bool relaxed = 7;
+
+    repeated string actions = 8;
 }
 

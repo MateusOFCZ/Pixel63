@@ -8,7 +8,7 @@ export default class RoomBot {
     public readonly item: RoomFigureItem;
 
     constructor(private readonly instance: RoomInstance, public data: UserBotData) {
-        this.figure = new Figure(this.data.figureConfiguration, this.data.direction);
+        this.figure = new Figure(this.data.figureConfiguration, this.data.direction, this.data.actions);
         this.item = new RoomFigureItem(this.instance.roomRenderer, this.figure, this.data.position);
         this.item.type = "bot";
 
@@ -17,7 +17,7 @@ export default class RoomBot {
         this.updateData(data);
     }
 
-    public updateData(data: UserBotData) {        
+    public updateData(data: UserBotData) {
         this.data = data;
 
         this.item.figureRenderer.configuration = this.data.figureConfiguration = data.figureConfiguration;

@@ -7,4 +7,6 @@ message PlaceRoomBotData {
 
     RoomPositionData position = 2;
     uint32 direction = 3;
+
+    repeated string actions = 4;
 }

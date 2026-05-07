@@ -43,7 +43,7 @@ export default function InventoryBotsTab() {
                     let mutated = [...bots];
 
                     if(payload.updatedUserBots.length) {
-                        mutated = 
+                        mutated =
                             payload.updatedUserBots.concat(
                                 ...mutated
                                     .filter((bot) => !payload.updatedUserBots?.some((userBot) => userBot.id === bot.id))
@@ -82,7 +82,7 @@ export default function InventoryBotsTab() {
     useEffect(() => {
         if(!roomFurniturePlacer) {
             setDialogHidden("inventory", false);
-            
+
             return;
         }
 
@@ -128,6 +128,33 @@ export default function InventoryBotsTab() {
         roomFurniturePlacerId.current = activeBot?.id;
     }, [roomFurniturePlacer, activeBot]);
 
+    const handleMouseDown = useCallback((bot: UserBotData) => {
+        if(!clientInstance.roomInstance.value) {
+            return;
+        }
+
+        if(roomFurniturePlacer) {
+            roomFurniturePlacer.destroy();
+        }
+
+        const mousemove = () => {
+            document.body.removeEventListener("mousemove", mousemove);
+
+            if(room && bot.figureConfiguration) {
+                setRoomFurniturePlacer(RoomFurniturePlacer.fromFigureConfiguration(room, bot.figureConfiguration));
+                roomFurniturePlacerId.current = bot.id;
+            }
+        };
+
+        document.body.addEventListener("mousemove", mousemove);
+
+        document.body.addEventListener("mouseup", () => {
+            document.body.removeEventListener("mousemove", mousemove);
+        }, {
+            once: true
+        });
+    }, [ setDialogHidden, room, roomFurniturePlacer ]);
+
     if(!bots.length) {
         return (<InventoryEmptyTab/>);
     }
@@ -158,7 +185,8 @@ export default function InventoryBotsTab() {
                             key={bot.id}
                             width={44}
                             active={activeBot?.id === bot.id}
-                            onClick={() => setActiveBot(bot)}>
+                            onClick={() => setActiveBot(bot)}
+                            onMouseDown={() => room && room.hasRights && handleMouseDown(bot)}>
                                 <div style={{
                                     width: 40,
                                     height: 40
